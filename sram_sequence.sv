@@ -12,15 +12,15 @@ class sram_sequence extends uvm_sequence #(reg_transaction);
   virtual task body();
 reg_transaction tr;
 
-  // directed writes first
-  repeat(8) begin
+ // directed writes first — cover every address 
+  for (int i = 0; i < 16; i++) begin
     tr = reg_transaction::type_id::create("tr");
     start_item(tr);
-    assert(tr.randomize() with { wr_en == 1; rd_en == 0; });
+    assert(tr.randomize() with { wr_en == 1; rd_en == 0; addr == i; });
     finish_item(tr);
   end
 
-  // random reads and writes after memory is populated
+  // random reads and writes after memory is fully populated
   repeat(16) begin
     tr = reg_transaction::type_id::create("tr");
     start_item(tr);
